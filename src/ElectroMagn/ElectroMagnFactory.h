@@ -138,8 +138,101 @@ public:
             }
             EMfields->prescribedFields.push_back( extField );
         }
-        
-        
+
+        // -----------------
+        // IncidentFields properties
+        // -----------------
+        if ( params.has_tfsf_formulation) {
+          unsigned int incident_field_number = PyTools::nComponents( "IncidentField" );
+          if( first_creation && incident_field_number > 0) {
+              TITLE("Initializing Incident Fields" );
+          }
+          std::vector<std::string> fieldName = {"Ex", "Ey", "Ez", "Bx", "By", "Bz"};
+          for( unsigned int n_incfield = 0; n_incfield < PyTools::nComponents( "IncidentField" ); n_incfield++ ) {
+              IncidentField incField;
+              std::vector<PyObject *> profile(6);
+
+              // Now import the profiles
+              std::ostringstream name( "" );
+
+              // Ex
+              name << "IncidentField[" << n_incfield <<"].profileEx";
+              if( !PyTools::extract_pyProfile( "profileEx", profile[0], "IncidentField", n_incfield ) ) {
+                  ERROR( "IncidentField #"<<n_incfield<<": parameter 'profileEx' not understood" );
+              }
+              incField.profile[0] = new Profile( profile[0], params.nDim_field+1, name.str(), params, true, true, true );
+
+              // Ey
+              name.str("");
+              name.clear();
+              name << "IncidentField[" << n_incfield <<"].profileEy";
+              if( !PyTools::extract_pyProfile( "profileEy", profile[1], "IncidentField", n_incfield ) ) {
+                  ERROR( "IncidentField #"<<n_incfield<<": parameter 'profileEy' not understood" );
+              }
+              incField.profile[1] = new Profile( profile[1], params.nDim_field+1, name.str(), params, true, true, true );
+
+              // Ez
+              name.str("");
+              name.clear();
+              name << "IncidentField[" << n_incfield <<"].profileEz";
+              if( !PyTools::extract_pyProfile( "profileEz", profile[2], "IncidentField", n_incfield ) ) {
+                  ERROR( "IncidentField #"<<n_incfield<<": parameter 'profileEz' not understood" );
+              }
+              incField.profile[2] = new Profile( profile[2], params.nDim_field+1, name.str(), params, true, true, true );
+
+              // Bx
+              name << "IncidentField[" << n_incfield <<"].profileBx";
+              if( !PyTools::extract_pyProfile( "profileBx", profile[3], "IncidentField", n_incfield ) ) {
+                  ERROR( "IncidentField #"<<n_incfield<<": parameter 'profileBx' not understood" );
+              }
+              incField.profile[3] = new Profile( profile[3], params.nDim_field+1, name.str(), params, true, true, true );
+
+              // By
+              name.str("");
+              name.clear();
+              name << "IncidentField[" << n_incfield <<"].profileBy";
+              if( !PyTools::extract_pyProfile( "profileBy", profile[4], "IncidentField", n_incfield ) ) {
+                  ERROR( "IncidentField #"<<n_incfield<<": parameter 'profileBy' not understood" );
+              }
+              incField.profile[4] = new Profile( profile[4], params.nDim_field+1, name.str(), params, true, true, true );
+
+              // Bz
+              name.str("");
+              name.clear();
+              name << "IncidentField[" << n_incfield <<"].profileBz";
+              if( !PyTools::extract_pyProfile( "profileBz", profile[5], "IncidentField", n_incfield ) ) {
+                  ERROR( "IncidentField #"<<n_incfield<<": parameter 'profileBz' not understood" );
+              }
+              incField.profile[5] = new Profile( profile[5], params.nDim_field+1, name.str(), params, true, true, true );
+
+
+              // Find which index the field is in the allFields vector
+              for ( unsigned int emf_comp=0; emf_comp<6; emf_comp++) {
+                incField.index[emf_comp] = 1000;
+                for( unsigned int ifield=0; ifield<EMfields->allFields.size(); ifield++ ) {
+                    if( EMfields->allFields[ifield]
+                          && fieldName[emf_comp]==EMfields->allFields[ifield]->name ) {
+                      incField.savedField[emf_comp] = EMfields->allFields[ifield]->clone();
+                      incField.index[emf_comp] =  ifield;
+                      break;
+                    }
+                }
+
+                if( incField.index[emf_comp] > EMfields->allFields.size()-1 ) {
+                    ERROR( "IncidentField #"<<n_incfield<<": field "<<fieldName[emf_comp]<<" not found" );
+                }
+                if( first_creation ) {
+                  MESSAGE(1, "Incident field " << fieldName[emf_comp] << ": " << incField.profile[emf_comp]->getInfo());
+                }
+
+              }
+
+              EMfields->incidentFields.push_back( incField );
+          }
+
+        }
+
+
         // -----------------
         // Antenna properties
         // -----------------

@@ -89,7 +89,9 @@ ElectroMagn::ElectroMagn( Params &params, DomainDecomposition *domain_decomposit
     emBoundCond = ElectroMagnBC_Factory::create( params, patch );
     MaxwellAmpereSolver_  = SolverFactory::createMA( params );
     MaxwellFaradaySolver_ = SolverFactory::createMF( params );
-    
+    MaxwellAmpereSolverTFSF_  = SolverFactory::createMA_TFSF( params );
+    MaxwellFaradaySolverTFSF_ = SolverFactory::createMF_TFSF( params );
+
     envelope = NULL;
     
 }
@@ -147,7 +149,9 @@ ElectroMagn::ElectroMagn( ElectroMagn *emFields, Params &params, Patch *patch ) 
     
     MaxwellAmpereSolver_  = SolverFactory::createMA( params );
     MaxwellFaradaySolver_ = SolverFactory::createMF( params );
-    
+    MaxwellAmpereSolverTFSF_  = SolverFactory::createMA_TFSF( params );
+    MaxwellFaradaySolverTFSF_ = SolverFactory::createMF_TFSF( params );
+
     envelope = NULL;
 }
 
@@ -361,7 +365,9 @@ ElectroMagn::~ElectroMagn()
         
     delete MaxwellAmpereSolver_;
     delete MaxwellFaradaySolver_;
-    
+    delete MaxwellAmpereSolverTFSF_;
+    delete MaxwellFaradaySolverTFSF_;
+
     if( envelope != NULL ) {
         delete envelope;
     }
@@ -580,6 +586,18 @@ void ElectroMagn::applyPrescribedFields( Patch *patch, double time )
         }
     }
 }
+
+//void ElectroMagn::applyIncidentFields( Params& params, Patch *patch, double time )
+//{
+//    for( vector<IncidentField>::iterator pf=incidentFields.begin(); pf!=incidentFields.end(); pf++ ) {
+//      for ( unsigned int i=0; i<6; i++) {
+//        if( pf->index[i] < allFields.size() ) {
+//            pf->savedField[i]->copyFrom(allFields[pf->index]);
+//            applyPrescribedField( params, allFields[pf->index[i]], pf->profile[i], patch, time );
+//        }
+//      }
+//    }
+//}
 
 void ElectroMagn::resetPrescribedFields()
 {

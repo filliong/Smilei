@@ -54,6 +54,22 @@ struct PrescribedField {
 };
 
 // ---------------------------------------------------------------------------------------------------------------------
+//! This structure contains the properties of each IncidentField
+// ---------------------------------------------------------------------------------------------------------------------
+struct IncidentField {
+
+    IncidentField() : profile(6), savedField(6), index(6){}
+
+    std::vector<Profile*> profile;
+
+    std::vector<Field*> savedField;
+
+    std::vector<unsigned int> index;
+};
+
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 //! This structure contains the properties of each Antenna
 // ---------------------------------------------------------------------------------------------------------------------
 struct Antenna {
@@ -331,6 +347,11 @@ public:
     Solver *MaxwellAmpereSolver_;
     //! Maxwell Faraday Solver
     Solver *MaxwellFaradaySolver_;
+    //! Maxwell Ampere Solver TFSF
+    Solver *MaxwellAmpereSolverTFSF_;
+    //! Maxwell Faraday Solver TFSF
+    Solver *MaxwellFaradaySolverTFSF_;
+
     virtual void saveMagneticFields( bool ) = 0;
     virtual void centerMagneticFields() = 0;
     virtual void binomialCurrentFilter(unsigned int ipass, std::vector<unsigned int> passes ) = 0;
