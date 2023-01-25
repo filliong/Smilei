@@ -418,15 +418,21 @@ public:
     
     //! external time fields parameters the key string is the name of the field and the value is a vector of ExtField
     std::vector<PrescribedField> prescribedFields;
-    
+
+    //! external time fields parameters the key string is the name of the field and the value is a vector of IncidentField
+    std::vector<IncidentField> incidentFields;
+
     //! Method used to impose external fields (apply to all Fields)
     virtual void applyExternalFields( Patch * );
 
     //! Method used to copy real field and impose an external time fields (apply to all Fields)
     virtual void applyPrescribedFields( Patch *, double time );
 
-	//! Method use to reset the real value of all fields on which we imposed an external time field
-	virtual void resetPrescribedFields();
+    //! Method used to copy real field and impose an external time fields (apply to all Fields)
+    //void applyIncidentFields( Param&, Patch *, double time );
+
+    //! Method use to reset the real value of all fields on which we imposed an external time field
+    virtual void resetPrescribedFields();
 
     void saveExternalFields( Patch * );
     
@@ -435,7 +441,10 @@ public:
     
     //! Method used to impose a prescribed fields (apply to a given Field)
     virtual void applyPrescribedField( Field *, Profile *, Patch *, double time) = 0 ;
-    
+
+    //! Method used to impose a incident fields (apply to a given Field)
+    //virtual void applyIncidentField( Params&, Field *, Profile *, Patch *, double time) = 0 ;
+
     //! Antenna
     std::vector<Antenna> antennas;
     

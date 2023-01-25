@@ -6,6 +6,9 @@
 #include "MA_Solver2D_Friedman.h"
 #include "MA_Solver3D_norm.h"
 #include "MA_SolverAM_norm.h"
+#include "MA_Solver1D_norm_TFSF.h"
+//#include "MA_Solver2D_norm_TFSF.h"
+//#include "MA_Solver3D_norm_TFSF.h"
 #include "MF_Solver1D_Yee.h"
 #include "MF_Solver2D_Yee.h"
 #include "MF_Solver3D_Yee.h"
@@ -20,6 +23,9 @@
 #include "MF_Solver1D_M4.h"
 #include "MF_Solver2D_M4.h"
 #include "MF_Solver3D_M4.h"
+#include "MF_Solver1D_Yee_TFSF.h"
+//#include "MF_Solver2D_Yee_TFSF.h"
+//#include "MF_Solver3D_Yee_TFSF.h"
 
 #include "PXR_Solver2D_GPSTD.h"
 #include "PXR_Solver3D_FDTD.h"
@@ -191,6 +197,60 @@ public:
 
         return solver;
     }
+
+    // create Maxwell-Ampere solver TFSF
+    // -----------------------------
+    static Solver *createMA_TFSF( Params &params )
+    {
+        Solver *solver = NULL;
+
+        if( params.has_tfsf_formulation ) {
+            if( params.geometry == "1Dcartesian" ) {
+                solver = new MA_Solver1D_norm_TFSF( params );
+            } //else if( params.geometry == "2Dcartesian" ) {
+              //  solver = new MA_Solver2D_norm_TFSF( params );
+            //} else if( params.geometry == "3Dcartesian" ) {
+            //    solver = new MA_Solver3D_norm_TFSF( params );
+              //}
+
+            if( !solver ) {
+                ERROR( "Unknown Maxwell-Ampere solver with TFSF" );
+            }
+        }
+        else
+          solver = new NullSolver( params );
+
+        return solver;
+    };
+
+    // create Maxwell-Faraday solver TFSF
+    // -----------------------------
+    static Solver *createMF_TFSF( Params &params )
+    {
+        Solver *solver = NULL;
+
+        if( params.has_tfsf_formulation ) {
+            if( params.geometry == "1Dcartesian" ) {
+                solver = new MF_Solver1D_Yee_TFSF( params );
+            } //else if( params.geometry == "2Dcartesian" ) {
+                //solver = new MF_Solver2D_Yee_TFSF( params );
+            //} else if( params.geometry == "3Dcartesian" ) {
+             //   solver = new MF_Solver3D_Yee_TFSF( params );
+             //   }
+
+            if( !solver ) {
+                ERROR( "Unknown Maxwell-Faraday solver with TFSF" );
+            }
+        }
+        else
+          solver = new NullSolver( params );
+
+        return solver;
+    };
+
+
+
+
 
 };
 

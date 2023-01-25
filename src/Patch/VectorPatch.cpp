@@ -1022,12 +1022,18 @@ void VectorPatch::solveMaxwell( Params &params, SimWindow *simWindow, int itime,
         // Computes Ex_, Ey_, Ez_ on all points.
         // E is already synchronized because J has been synchronized before.
         ( *( *this )( ipatch )->EMfields->MaxwellAmpereSolver_ )( ( *this )( ipatch )->EMfields );
+
+        if( params.has_tfsf_formulation)
+          ( *( *this )( ipatch )->EMfields->MaxwellAmpereSolverTFSC_ )( ( *this )( ipatch )->EMfields,  ( *this )( ipatch ) );
     }
 
     #pragma omp for schedule(static)
     for( unsigned int ipatch=0 ; ipatch<this->size() ; ipatch++ ) {
         // Computes Bx_, By_, Bz_ at time n+1 on interior points.
         ( *( *this )( ipatch )->EMfields->MaxwellFaradaySolver_ )( ( *this )( ipatch )->EMfields );
+
+        if( params.has_tfsf_formulation)
+          ( *( *this )( ipatch )->EMfields->MaxwellFaradaySolverTFSC_ )( ( *this )( ipatch )->EMfields, ( *this )( ipatch ) );
     }
     //Synchronize B fields between patches.
     timers.maxwell.update( params.printNow( itime ) );
