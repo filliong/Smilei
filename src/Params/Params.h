@@ -123,6 +123,11 @@ public:
     //! time during which the Maxwell's equations are not solved
     double time_fields_frozen;
 
+    //! Number of cells for scattered field region in the TFSF formulation
+    std::vector< std::vector<int> > number_of_scat_field_cells;
+    //! Flag for tfsf formulation
+    bool has_tfsf_formulation;
+
     //! Boundary conditions for ElectroMagnetic Fields
     std::vector< std::vector<std::string> > EM_BCs;
     //! k parameters for some kinds of ElectroMagnetic boundary conditions

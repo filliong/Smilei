@@ -513,6 +513,49 @@ Params::Params( SmileiMPI *smpi, std::vector<std::string> namelistsFiles ) :
     PyTools::extractVV( "number_of_pml_cells", number_of_pml_cells, "Main" );
 
     // -----------------------------------
+    // TFSF formulation options
+    // -----------------------------------
+
+    has_tfsf_formulation = false;
+    if(maxwell_sol == "Yee" &&
+       PyTools::extractVV( "number_of_scat_field_cells", number_of_scat_field_cells, "Main" )) {
+      if ( number_of_scat_field_cells.size() == 1) {
+        if (number_of_scat_field_cells[0].size() == 1)
+          number_of_scat_field_cells[0].push_back(number_of_scat_field_cells[0][0]);
+        while( number_of_scat_field_cells.size() < nDim_field ) {
+          number_of_scat_field_cells.push_back( number_of_scat_field_cells[0] );
+        }
+      }
+      else if( number_of_scat_field_cells.size() != nDim_field ) {
+        ERROR_NAMELIST( "number_of_scat_field_cells must be the same size as the number of dimensions",
+                         LINK_NAMELIST + std::string("#main-variables") );
+      }
+      else {
+        for ( unsigned int i=0; i<number_of_scat_field_cells.size(); i++) {
+          if ( number_of_scat_field_cells[i].size() == 1 )
+            number_of_scat_field_cells[i].push_back(number_of_scat_field_cells[i][0]);
+          else if ( number_of_scat_field_cells[i].size() != 2 ) {
+            ERROR_NAMELIST( "number_of_scat_field_cells second dimension should be 1 or 2",
+                         LINK_NAMELIST + std::string("#main-variables") );
+          }
+        }
+      }
+      // Check that all boundary conditions are PML
+      bool has_all_pml = true;
+      for ( unsigned int i=0; i<EM_BCs.size(); i++ ) {
+        if ( EM_BCs[i][0] != "PML" || EM_BCs[i][1] != "PML") {
+          has_all_pml = false;
+          break;
+        }
+      }
+      if ( has_all_pml )
+        has_tfsf_formulation = true;
+      else
+        ERROR_NAMELIST( "All boundary conditions should be PML with TFSF formulation ",
+                         LINK_NAMELIST + std::string("#main-variables") );
+    }
+
+    // -----------------------------------
     // POISSON & FILTERING OPTIONS
     // -----------------------------------
 
